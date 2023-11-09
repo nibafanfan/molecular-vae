@@ -1,40 +1,29 @@
-from types import SimpleNamespace
-import pandas as pd
-import Molecular_VAE
-import biobricks as bb
-ns = bb.assets('tox21') # get the paths for the 'tox21' brick
 
-# Access the attributes
-tox21_parquet_path = ns.tox21_parquet
-tox21lib_parquet_path = ns.tox21lib_parquet
-tox21_aggregated_parquet_path = ns.tox21_aggregated_parquet
+import os
+import torch
+import torch.nn as nn
 
-# Now you have the paths in variables
-print(tox21_parquet_path)
-print(tox21lib_parquet_path)
-print(tox21_aggregated_parquet_path)
+def main():
+    here = os.path.abspath(os.path.dirname(__file__))
 
-# Reading the Parquet files using pandas
-tox21_df = pd.read_parquet(ns.tox21_parquet)
-tox21lib_df = pd.read_parquet(ns.tox21lib_parquet)
-tox21_aggregated_df = pd.read_parquet(ns.tox21_aggregated_parquet)
+    #!rm -R 'molecular-vae'
+    #!git clone https://github.com/aksub99/molecular-vae.git
+    import zipfile
+    dataFolder =  os.path.join(here, 'data')
+    zipfilename = os.path.join(dataFolder, 'processed.zip')
+    h5filename = os.path.join(dataFolder, 'processed.h5')
+    print(zipfilename)
+    if not os.path.exists(h5filename):
+        zip_ref = zipfile.ZipFile(zipfilename, 'r')
+        zip_ref.extractall(dataFolder)
+        zip_ref.close()
 
-# Print the size of each DataFrame
-print(f"tox21_df size: {tox21_df.shape}")
-print(f"tox21lib_df size: {tox21lib_df.shape}")
-print(f"tox21_aggregated_df size: {tox21_aggregated_df.shape}")
+    def vae_loss(x_decoded_mean, x, z_mean, z_logvar):
+        xent_loss = F.binary_cross_entropy(x_decoded_mean, x, size_average=False)
+        kl_loss = -0.5 * torch.sum(1 + z_logvar - z_mean.pow(2) - z_logvar.exp())
+        return xent_loss + kl_loss
 
-# Print the first element of each DataFrame vertically
-print("First element of tox21_df:")
-print(tox21_df.iloc[0].to_frame())
-print("\nFirst element of tox21lib_df:")
-print(tox21lib_df.iloc[0].to_frame())
-print("\nFirst element of tox21_aggregated_df:")
-print(tox21_aggregated_df.iloc[0].to_frame())
-
-mvae = Molecular_VAE.MolecularVAE()
-def train():
-    data_train, data_test = s#split 90% train, 10% test 
+    data_train, data_test, charset = load_dataset(h5filename)
     data_train = torch.utils.data.TensorDataset(torch.from_numpy(data_train))
     train_loader = torch.utils.data.DataLoader(data_train, batch_size=250, shuffle=True)
 
@@ -77,3 +66,6 @@ def train():
 
     for epoch in range(1, epochs + 1):
         train_loss = train(epoch)
+
+if __name__ == "__main__":
+    main()
