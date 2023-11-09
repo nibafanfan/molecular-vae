@@ -27,7 +27,7 @@ def from_one_hot_array(vec):
     return int(oh[0][0])
 
 def decode_smiles_from_indexes(vec, charset):
-    return "".join(map(lambda x: charset[x], vec)).strip()
+    return b"".join(map(lambda x: charset[x], vec)).strip()
 
 def load_dataset(filename, split = True):
     h5f = h5py.File(filename, 'r')
@@ -88,12 +88,19 @@ class MolecularVAE(nn.Module):
         z = self.sampling(z_mean, z_logvar)
         return self.decode(z), z_mean, z_logvar
 
+here = os.path.abspath(os.path.dirname(__file__))
+
 #!rm -R 'molecular-vae'
 #!git clone https://github.com/aksub99/molecular-vae.git
 import zipfile
-zip_ref = zipfile.ZipFile('molecular-vae/data/processed.zip', 'r')
-zip_ref.extractall('molecular-vae/data/')
-zip_ref.close()
+dataFolder =  os.path.join(here, 'data')
+zipfilename = os.path.join(dataFolder, 'processed.zip')
+h5filename = os.path.join(dataFolder, 'processed.h5')
+print(zipfilename)
+if not os.path.exists(h5filename):
+    zip_ref = zipfile.ZipFile(zipfilename, 'r')
+    zip_ref.extractall(dataFolder)
+    zip_ref.close()
 
 
 def vae_loss(x_decoded_mean, x, z_mean, z_logvar):
@@ -101,7 +108,7 @@ def vae_loss(x_decoded_mean, x, z_mean, z_logvar):
     kl_loss = -0.5 * torch.sum(1 + z_logvar - z_mean.pow(2) - z_logvar.exp())
     return xent_loss + kl_loss
 
-data_train, data_test, charset = load_dataset('molecular-vae/data/processed.h5')
+data_train, data_test, charset = load_dataset(h5filename)
 data_train = torch.utils.data.TensorDataset(torch.from_numpy(data_train))
 train_loader = torch.utils.data.DataLoader(data_train, batch_size=250, shuffle=True)
 
