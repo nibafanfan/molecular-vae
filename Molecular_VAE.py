@@ -15,7 +15,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from sklearn import model_selection
 
 def one_hot_array(i, n):
-    return map(int, [ix == i for ix in xrange(n)])
+    return map(int, [ix == i for ix in range(n)])
 
 def one_hot_index(vec, charset):
     return map(charset.index, vec)
@@ -25,6 +25,22 @@ def from_one_hot_array(vec):
     if oh[0].shape == (0, ):
         return None
     return int(oh[0][0])
+
+#NEW FUNCTIONS ______________________
+def char_to_index(char_set):
+    return  {char: idx for idx, char in enumerate(sorted(char_set))}
+
+def one_hot_encode(smiles, char_to_index):
+    # Create a matrix of zeros
+    one_hot_matrix = np.zeros((len(smiles), len(char_to_index)), dtype=np.int32)
+
+    # Fill the matrix with one-hot encoding
+    for i, char in enumerate(smiles):
+        one_hot_matrix[i, char_to_index[char]] = 1
+
+    return one_hot_matrix
+
+#NEW FUNCTIONS  END______________________
 
 def decode_smiles_from_indexes(vec, charset):
     return b"".join(map(lambda x: charset[x], vec)).strip()
