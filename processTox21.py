@@ -6,17 +6,17 @@ import biobricks as bb
 import numpy as np
 from Molecular_VAE import one_hot_array,one_hot_index,decode_smiles_from_indexes, load_dataset, char_to_index, one_hot_encode
 ns = bb.assets('tox21') # get the paths for the 'tox21' brick
-h5_file = load_dataset("./data/processed.h5")
-h5_char_set = h5_file[2]
+# h5_file = load_dataset("./data/processed.h5")
+# h5_char_set = h5_file[2]
 
-index_dict = {}
-for idx, element in enumerate(h5_char_set):
-    if element in index_dict:
-        index_dict[element].append(idx)
-    else:
-        index_dict[element] = [idx]
+# index_dict = {}
+# for idx, element in enumerate(h5_char_set):
+#     if element in index_dict:
+#         index_dict[element].append(idx)
+#     else:
+#         index_dict[element] = [idx]
 
-print(index_dict)
+# print(index_dict)
 
 #cti = char_to_index(h5_char_set)
 
@@ -44,7 +44,7 @@ print(tox21_df.iloc[0].to_frame())
 # print("\nFirst element of tox21_aggregated_df:")
 # print(tox21_aggregated_df.iloc[0].to_frame())
 
-tox21_smiles=tox21_df['SMILES']
+tox21_smiles=tox21_df['SMILES'].iloc[:100]
 tox21_smiles
 
 char_set = set()
@@ -66,7 +66,7 @@ for smile in tox21_smiles:
     elif len(smile) > 120:
         length = len(smile)
         smile = smile[length - 120:]
-    print('midpoint')
+    
     for char in smile:
         if char == 'X' or b'P':
             one_hot_encoding = one_hot_array(-1,len(byte_strings))

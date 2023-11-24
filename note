@@ -1,0 +1,40 @@
+11/23. Kept adjusting NN structure, after we got the encoding part debugged. Learned better ways to look into the layer. x.to(device), also the layer need to be to device.
+
+
+File "<stdin>", line 2, in vae_loss
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/functional.py", line 3113, in binary_cross_entropy
+    raise ValueError(
+
+ValueError: Using a target size (torch.Size([10, 62, 120])) that is different to the input size (torch.Size([10, 120, 15360])) is deprecated. Please ensure they have the same size.
+
+Need to look into the size of target, and  input, and binary_cross_entropy function.sor of the same shape as input with 
+
+>>> KLD.shape
+torch.Size([])
+>>> KLD
+tensor(1.3217, device='cuda:0', grad_fn=<MulBackward0>)
+
+  File "<stdin>", line 43, in decode
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/modules/rnn.py", line 1100, in forward
+    self.check_forward_args(input, hx, batch_sizes)
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/modules/rnn.py", line 270, in check_forward_args
+    self.check_input(input, batch_sizes)
+  File "/home/yifan/.local/lib/python3.11/site-packages/torch/nn/modules/rnn.py", line 236, in check_input
+    raise RuntimeError(
+RuntimeError: input.size(-1) must be equal to input_size. Expected 256, got 128
+
+RuntimeError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Tensor.py is running, but the loss is not reducing. 
+So I try to troubleshoot, starting from simplying the decoder and see if it learns/
+
+
