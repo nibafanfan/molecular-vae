@@ -38,3 +38,21 @@ Tensor.py is running, but the loss is not reducing.
 So I try to troubleshoot, starting from simplying the decoder and see if it learns/
 
 
+-----
+11/25
+
+Tensor4.py run on epoch 100:
+RuntimeError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+Realized charset might have a problem with '\'
+
+Where below output is like this---
+>>> decode_one_hot_tensor(recon_batch[0],int_to_char)
+'CCCC](CCCC(@C((C)CCC()C1CcC(C()CCC(CCCCCcCcCCccCCCCCCCCCCC)C[CcCCcC(CcCcCCCCCCcCcCc(Cccc@3('
+>>> decode_one_hot_tensor(x1[0],int_to_char)
+'[Na+].[Na+].O.O.O.O=C(c1ccc(Br)cc1)c2cccc(CC([O-])=O)c2N.[O-]C(=O)Cc1cccc(c1N)C(=O)c2ccc(Br)cc2'
+
